@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Naruto — AI Productivity Assistant</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="space-theme">
+
+  <canvas id="galaxy-canvas"></canvas>
+
+  <div class="app-wrapper">
+    <div class="app-window">
+      
+      <!-- ================= SIDEBAR ================= -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="brand">
+            <div class="brand-logo-icon"><i class="fa-solid fa-shapes"></i></div>
+            <span class="brand-name" data-i18n="brand">Naruto AI</span>
+          </div>
+          <button class="icon-btn-ghost close-sidebar-btn" id="close-sidebar-btn">
+            <i class="fa-solid fa-bars-staggered"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-nav">
+          <!-- Chat -->
+          <button class="nav-item active view-switcher" data-target="view-chat">
+            <div class="nav-item-left"><i class="fa-regular fa-message"></i><span data-i18n="nav_chat">Chat</span></div>
+          </button>
+          
+          <!-- History -->
+          <button class="nav-item view-switcher" data-target="view-history">
+            <div class="nav-item-left"><i class="fa-solid fa-clock-rotate-left"></i><span data-i18n="nav_history">History</span></div>
+          </button>
+
+          <!-- Study Mode -->
+          <button class="nav-item view-switcher" data-target="view-study">
+            <div class="nav-item-left"><i class="fa-solid fa-graduation-cap"></i><span data-i18n="nav_study">Study Mode</span></div>
+          </button>
+
+          <!-- Documents -->
+          <button class="nav-item view-switcher" data-target="view-documents">
+            <div class="nav-item-left"><i class="fa-regular fa-file-pdf"></i><span data-i18n="nav_documents">Documents</span></div>
+          </button>
+          
+          <!-- Data Analyst -->
+          <button class="nav-item view-switcher" data-target="view-data-analyst">
+            <div class="nav-item-left"><i class="fa-solid fa-chart-pie"></i><span data-i18n="nav_data_analyst">Data Analyst</span></div>
+          </button>
+          
+          <!-- Tasks -->
+          <button class="nav-item view-switcher" data-target="view-tasks">
+            <div class="nav-item-left"><i class="fa-solid fa-list-check"></i><span data-i18n="nav_tasks">Tasks</span></div>
+          </button>
+
+          <!-- Expenses -->
+          <button class="nav-item view-switcher" data-target="view-expenses">
+            <div class="nav-item-left"><i class="fa-solid fa-wallet"></i><span data-i18n="nav_expenses">Expenses</span></div>
+          </button>
+
+        </nav>
+
+        <div class="sidebar-section-title">
+          <span data-i18n="nav_settings">Settings & Help</span>
+        </div>
+        <nav class="sidebar-nav sidebar-bottom-nav">
+          <button class="nav-item view-switcher" data-target="view-settings">
+            <div class="nav-item-left"><i class="fa-solid fa-gear"></i><span data-i18n="nav_settings">Settings</span></div>
+          </button>
+        </nav>
+
+      </aside>
+
+      <!-- ================= MAIN ================= -->
+      <main class="main-portal">
+        <header class="top-nav">
+          <div class="top-left">
+            <button class="icon-btn-ghost menu-toggle-btn" id="open-sidebar-btn"><i class="fa-solid fa-bars"></i></button>
+            <div class="chat-title-group">
+              <span class="chat-title-input" id="chat-title-display">Naruto AI Workspace</span>
+            </div>
+          </div>
+          <div class="top-center">
+            <select id="global-mode-select" class="mode-select">
+              <option value="mode_general" data-i18n="mode_general">General Assistant</option>
+              <option value="mode_teacher" data-i18n="mode_teacher">Teacher</option>
+              <option value="mode_coding" data-i18n="mode_coding">Coding Assistant</option>
+              <option value="mode_data" data-i18n="mode_data">Data Analyst</option>
+              <option value="mode_study" data-i18n="mode_study">Study Assistant</option>
+              <option value="mode_business" data-i18n="mode_business">Business Assistant</option>
+              <option value="mode_interviewer" data-i18n="mode_interviewer">Interviewer</option>
+            </select>
+          </div>
+          <div class="top-right">
+            <!-- Global Language Selector -->
+            <select id="global-language-select" class="lang-select">
+                <!-- Populated dynamically via JS -->
+            </select>
+            <button class="top-icon-btn toggle-web-btn" id="web-search-toggle" title="Web Search: OFF"><i class="fa-solid fa-globe"></i></button>
+            <button class="top-icon-btn" id="theme-toggle-btn"><i class="fa-regular fa-sun"></i></button>
+          </div>
+        </header>
+
+        <!-- VIEW CONTAINERS -->
+        
+        <!-- 1. CHAT VIEW -->
+        <div class="view-panel active" id="view-chat">
+          <div class="chat-container" id="chat-container">
+            <div class="welcome-stage" id="welcome-stage">
+              <h2 class="welcome-heading" data-i18n="welcome_title">How can I assist your workflow today?</h2>
+              <p class="welcome-tagline" data-i18n="welcome_desc">Select a tool from the sidebar or start conversing with Naruto AI.</p>
+            </div>
+            <div class="messages-list" id="messages-list"></div>
+            <div class="loading-state-indicator" id="thinking-state" style="display: none;">
+              <span data-i18n="loading">Processing...</span>
+            </div>
+            <div id="scroll-anchor"></div>
+          </div>
+
+          <div class="bottom-dock-wrapper">
+            <form class="chat-form-pill" id="chat-form" onsubmit="return false;">
+              <input type="file" id="file-upload-input" style="display: none;">
+              <button type="button" class="dock-icon-btn" id="trigger-file-upload-btn"><i class="fa-solid fa-paperclip"></i></button>
+              <button type="button" class="dock-icon-btn" id="voice-input-btn"><i class="fa-solid fa-microphone"></i></button>
+              
+              <div class="textarea-wrapper">
+                <textarea id="prompt-textarea" rows="1" placeholder="Type your message here..."></textarea>
+              </div>
+              
+              <button type="button" class="dock-send-btn" id="send-prompt-btn"><i class="fa-regular fa-paper-plane"></i></button>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. HISTORY VIEW -->
+        <div class="view-panel" id="view-history">
+          <div class="panel-header">
+            <h2 data-i18n="nav_history">History</h2>
+          </div>
+          <div class="panel-content">
+            <div id="history-list" class="history-list"></div>
+          </div>
+        </div>
+        
+        <!-- 3. DATA ANALYST VIEW -->
+        <div class="view-panel" id="view-data-analyst">
+          <div class="panel-header">
+            <h2 data-i18n="nav_data_analyst">Data Analyst</h2>
+            <p>Upload a CSV or Excel file for automated insights.</p>
+          </div>
+          <div class="panel-content">
+            <input type="file" id="data-upload-input" accept=".csv, .xlsx, .xls">
+            <button class="btn-primary" id="analyze-data-btn">Analyze Dataset</button>
+            <div id="data-analysis-results" style="margin-top:20px;"></div>
+          </div>
+        </div>
+
+        <!-- 4. TASKS VIEW -->
+        <div class="view-panel" id="view-tasks">
+          <div class="panel-header">
+            <h2 data-i18n="nav_tasks">Task Manager</h2>
+          </div>
+          <div class="panel-content">
+             <div class="add-task-form">
+               <input type="text" id="task-title" placeholder="New task...">
+               <select id="task-category">
+                  <option>Work</option><option>Study</option><option>Personal</option>
+               </select>
+               <button class="btn-primary" id="add-task-btn">Add Task</button>
+             </div>
+             <div id="tasks-list" class="tasks-list"></div>
+          </div>
+        </div>
+        
+        <!-- 5. EXPENSES VIEW -->
+        <div class="view-panel" id="view-expenses">
+          <div class="panel-header">
+            <h2 data-i18n="nav_expenses">Expense Tracker</h2>
+          </div>
+          <div class="panel-content">
+             <div class="add-expense-form">
+               <input type="text" id="exp-title" placeholder="Expense description...">
+               <input type="number" id="exp-amount" placeholder="Amount">
+               <input type="text" id="exp-cat" placeholder="Category">
+               <button class="btn-primary" id="add-exp-btn">Add Expense</button>
+             </div>
+             <div class="expense-stats" id="expense-stats"></div>
+             <div id="expenses-list" class="expenses-list"></div>
+          </div>
+        </div>
+        
+        <!-- 6. SETTINGS VIEW -->
+        <div class="view-panel" id="view-settings">
+          <div class="panel-header">
+            <h2 data-i18n="nav_settings">Settings</h2>
+          </div>
+          <div class="panel-content">
+             <div class="form-group">
+               <label>Groq API Key</label>
+               <input type="password" id="settings-api-key" placeholder="gsk_...">
+               <button class="btn-primary-small" id="save-key-btn">Save Key</button>
+             </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="/static/js/translations.js"></script>
+  <script src="/static/js/views.js"></script>
+  <script src="/static/js/galaxy3d.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
